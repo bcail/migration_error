@@ -1,0 +1,29 @@
+BEGIN;
+--
+-- Alter field id on basequestion
+--
+SET CONSTRAINTS "polls_question_basequestion_ptr_id_08d274da_fk" IMMEDIATE; ALTER TABLE "polls_question" DROP CONSTRAINT "polls_question_basequestion_ptr_id_08d274da_fk";
+SET CONSTRAINTS "polls_questioncontribution_base_question_id_25bfb2a8_fk" IMMEDIATE; ALTER TABLE "polls_questioncontribution" DROP CONSTRAINT "polls_questioncontribution_base_question_id_25bfb2a8_fk";
+SET CONSTRAINTS "polls_questioncontribution_base_question_id_25bfb2a8_fk" IMMEDIATE; ALTER TABLE "polls_questioncontribution" DROP CONSTRAINT "polls_questioncontribution_base_question_id_25bfb2a8_fk";
+ALTER TABLE "polls_basequestion" ALTER COLUMN "id" TYPE bigint USING "id"::bigint;
+DROP SEQUENCE IF EXISTS "polls_basequestion_id_seq" CASCADE;
+CREATE SEQUENCE "polls_basequestion_id_seq";
+ALTER TABLE "polls_basequestion" ALTER COLUMN "id" SET DEFAULT nextval('"polls_basequestion_id_seq"');
+SELECT setval('"polls_basequestion_id_seq"', MAX("id")) FROM "polls_basequestion";
+ALTER SEQUENCE "polls_basequestion_id_seq" OWNED BY "polls_basequestion"."id";
+ALTER TABLE "polls_question" ALTER COLUMN "basequestion_ptr_id" TYPE bigint USING "basequestion_ptr_id"::bigint;
+ALTER TABLE "polls_questioncontribution" ALTER COLUMN "base_question_id" TYPE bigint USING "base_question_id"::bigint;
+ALTER TABLE "polls_questioncontribution" ALTER COLUMN "base_question_id" TYPE bigint USING "base_question_id"::bigint;
+ALTER TABLE "polls_question" ADD CONSTRAINT "polls_question_basequestion_ptr_id_08d274da_fk" FOREIGN KEY ("basequestion_ptr_id") REFERENCES "polls_basequestion" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "polls_questioncontribution" ADD CONSTRAINT "polls_questioncontribution_base_question_id_25bfb2a8_fk" FOREIGN KEY ("base_question_id") REFERENCES "polls_basequestion" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "polls_questioncontribution" ADD CONSTRAINT "polls_questioncontribution_base_question_id_25bfb2a8_fk" FOREIGN KEY ("base_question_id") REFERENCES "polls_basequestion" ("id") DEFERRABLE INITIALLY DEFERRED;
+--
+-- Alter field id on questioncontribution
+--
+ALTER TABLE "polls_questioncontribution" ALTER COLUMN "id" TYPE bigint USING "id"::bigint;
+DROP SEQUENCE IF EXISTS "polls_questioncontribution_id_seq" CASCADE;
+CREATE SEQUENCE "polls_questioncontribution_id_seq";
+ALTER TABLE "polls_questioncontribution" ALTER COLUMN "id" SET DEFAULT nextval('"polls_questioncontribution_id_seq"');
+SELECT setval('"polls_questioncontribution_id_seq"', MAX("id")) FROM "polls_questioncontribution";
+ALTER SEQUENCE "polls_questioncontribution_id_seq" OWNED BY "polls_questioncontribution"."id";
+COMMIT;
